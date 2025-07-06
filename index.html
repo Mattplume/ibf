@@ -26,8 +26,7 @@
         align-items: center;
         width: 100vw;
         height: 100vh;
-        cursor: default;
-        pointer-events: none;
+        cursor: pointer;
       }
       .center-link img {
         max-width: 90vw;
@@ -35,31 +34,6 @@
         height: auto;
         width: auto;
         display: block;
-        pointer-events: none;
-      }
-
-      /* Indication visuelle pour l'inclinaison */
-      .tilt-indicator {
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        color: rgba(44, 43, 43, 0.7);
-        font-family: "Inter", sans-serif;
-        font-size: 14px;
-        text-align: center;
-        pointer-events: none;
-        animation: pulse 2s infinite;
-      }
-
-      @keyframes pulse {
-        0%,
-        100% {
-          opacity: 0.7;
-        }
-        50% {
-          opacity: 1;
-        }
       }
     </style>
   </head>
@@ -70,44 +44,7 @@
       </a>
     </div>
 
-    <div class="tilt-indicator">Inclinez votre téléphone pour continuer</div>
-
     <script>
-      // Variables pour gérer l'inclinaison
-      let isTilted = false;
-      let tiltThreshold = 15; // Seuil d'inclinaison en degrés
-      let lastTiltTime = 0;
-      let tiltCooldown = 2000; // Délai entre deux déclenchements (2 secondes)
-
-      // Fonction pour détecter l'inclinaison
-      function handleOrientation(event) {
-        const beta = event.beta; // Inclinaison avant/arrière (-180 à 180)
-        const gamma = event.gamma; // Inclinaison gauche/droite (-90 à 90)
-
-        // Calculer l'inclinaison totale
-        const tiltAngle = Math.sqrt(beta * beta + gamma * gamma);
-
-        // Vérifier si l'inclinaison dépasse le seuil
-        if (tiltAngle > tiltThreshold && !isTilted) {
-          const currentTime = Date.now();
-
-          // Vérifier le délai entre deux déclenchements
-          if (currentTime - lastTiltTime > tiltCooldown) {
-            isTilted = true;
-            lastTiltTime = currentTime;
-
-            // Déclencher la transition vers la page suivante
-            navigateToNextPage();
-            console.log("Navigation déclenchée par inclinaison!");
-
-            // Réinitialiser après un délai
-            setTimeout(() => {
-              isTilted = false;
-            }, 1000);
-          }
-        }
-      }
-
       // Fonction pour naviguer avec transition
       function navigateToNextPage() {
         // Ajouter la classe pour le fondu sortant
@@ -119,39 +56,13 @@
         }, 800);
       }
 
-      // Demander la permission et ajouter l'écouteur d'événement
-      function initTiltDetection() {
-        // Vérifier si l'API est supportée
-        if (window.DeviceOrientationEvent) {
-          // Demander la permission sur iOS
-          if (typeof DeviceOrientationEvent.requestPermission === "function") {
-            DeviceOrientationEvent.requestPermission()
-              .then((permissionState) => {
-                if (permissionState === "granted") {
-                  window.addEventListener(
-                    "deviceorientation",
-                    handleOrientation
-                  );
-                  console.log("Détection d'inclinaison activée");
-                } else {
-                  console.log(
-                    "Permission refusée pour l'orientation du dispositif"
-                  );
-                }
-              })
-              .catch(console.error);
-          } else {
-            // Sur Android et autres navigateurs
-            window.addEventListener("deviceorientation", handleOrientation);
-            console.log("Détection d'inclinaison activée");
-          }
-        } else {
-          console.log("L'API DeviceOrientationEvent n'est pas supportée");
-        }
-      }
-
-      // Initialiser quand la page est chargée
-      window.addEventListener("load", initTiltDetection);
+      // Gérer le clic sur le lien
+      document
+        .getElementById("tiltLink")
+        .addEventListener("click", function (e) {
+          e.preventDefault();
+          navigateToNextPage();
+        });
     </script>
   </body>
 </html>
